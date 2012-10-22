@@ -30,13 +30,13 @@
                      (prn #\newline (newstring 24 #\space) y)
                      (prn (newstring (- 22 len.x) #\space) y))))
              rev.help_)))
-  (or test* (quit 1)))
+  (quit 1))
 
 (def parseopt-err (opt msg (o code 1))
   (w/stdout (stderr)
     (prn prog_ ": " opt ": invalid argument")
     (prn msg))
-  (or test* (quit code)))
+  (quit code))
 
 (def setup-optspec ((name spec default (o help "")))
   (if (is name 'args)
