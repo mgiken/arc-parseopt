@@ -1,7 +1,7 @@
-(= test* t)
 (load "parseopt.arc")
 (load "test.arc")
 
+(redef quit (x) nil)
 (= stderr stdout)
 
 (test iso (parseopt nil) (list (table) nil))
