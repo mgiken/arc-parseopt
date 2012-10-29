@@ -5,12 +5,17 @@
 (= stderr stdout)
 
 (test iso (parseopt nil) (list (table) nil))
-(test iso (tostring:parseopt '("-a")) "\
+(test iso (tostring:parseopt '("--help")) "\
 Usage: parseopt.t [OPTION]...
 
       --help            display this help and exit
       --version         output version information and exit
 ")
+(test iso (tostring:parseopt '("-a")) "\
+parseopt.t: invalid option -- 'a'
+Try `parseopt.t--help' for more information.
+")
+
 
 (test iso (parseopt '("foo")) (list (table) (list "foo")))
 
@@ -23,19 +28,16 @@ Usage: parseopt.t [OPTION]...
 (test iso (parseopt '("-a")) (list (obj a t) nil))
 (test iso (parseopt '("foo")) (list (table) '("foo")))
 (test iso (parseopt '("-a" "foo")) (list (obj a t) '("foo")))
-(test iso (tostring:parseopt '("--aaaa")) "\
-Usage: parseopt.t [OPTION]...
-
-  -a                    aaaaaa
-      --help            display this help and exit
-      --version         output version information and exit
-")
 (test iso (tostring:parseopt '("--help")) "\
 Usage: parseopt.t [OPTION]...
 
   -a                    aaaaaa
       --help            display this help and exit
       --version         output version information and exit
+")
+(test iso (tostring:parseopt '("--aaaa")) "\
+parseopt.t: unrecognized option '--aaaa'
+Try `parseopt.t--help' for more information.
 ")
 (test iso (tostring:parseopt '("--version")) "parseopt.t version 0.0.1\n")
 (= version* "1.0.0")
@@ -50,12 +52,16 @@ Usage: parseopt.t [OPTION]...
 (test iso (parseopt '("--aaaa")) (list (obj a t) nil))
 (test iso (parseopt '("foo")) (list (table) '("foo")))
 (test iso (parseopt '("--aaaa" "foo")) (list (obj a t) '("foo")))
-(test iso (tostring:parseopt '("-a")) "\
+(test iso (tostring:parseopt '("--help")) "\
 Usage: parseopt.t [OPTION]...
 
   --aaaa                aaaaaa
       --help            display this help and exit
       --version         output version information and exit
+")
+(test iso (tostring:parseopt '("-a")) "\
+parseopt.t: invalid option -- 'a'
+Try `parseopt.t--help' for more information.
 ")
 
 ; ------------------------------------------------------------------------------
@@ -69,12 +75,16 @@ Usage: parseopt.t [OPTION]...
 (test iso (parseopt '("foo")) (list (table) '("foo")))
 (test iso (parseopt '("-a" "foo")) (list (obj a t) '("foo")))
 (test iso (parseopt '("--aaaa" "foo")) (list (obj a t) '("foo")))
-(test iso (tostring:parseopt '("-b")) "\
+(test iso (tostring:parseopt '("--help")) "\
 Usage: parseopt.t [OPTION]...
 
   -a, --aaaa            aaaaaa
       --help            display this help and exit
       --version         output version information and exit
+")
+(test iso (tostring:parseopt '("-b")) "\
+parseopt.t: invalid option -- 'b'
+Try `parseopt.t--help' for more information.
 ")
 
 ; ------------------------------------------------------------------------------
@@ -84,13 +94,18 @@ Usage: parseopt.t [OPTION]...
   (b "b|bbbb=s:FILE" nil "bbbbbb"))
 
 (test iso (parseopt nil) (list (table) nil))
-(test iso (tostring:parseopt '("-b")) "\
+(test iso (tostring:parseopt '("--help")) "\
 Usage: parseopt.t [OPTION]...
 
   -a, --aaaa            aaaaaa
   -b FILE, --bbbb=FILE  bbbbbb
       --help            display this help and exit
       --version         output version information and exit
+")
+
+(test iso (tostring:parseopt '("-b")) "\
+parseopt.t: option requires an argument -- 'b'
+Try `parseopt.t--help' for more information.
 ")
 (test iso (parseopt '("-a" "-b" "foo")) (list (obj a t b "foo") nil))
 (test iso (parseopt '("-a" "-b=foo")) (list (obj a t b "foo") nil))
@@ -98,29 +113,21 @@ Usage: parseopt.t [OPTION]...
 (test iso (parseopt '("-a" "--bbbb=foo")) (list (obj a t b "foo") nil))
 (test iso (parseopt '("-a" "-b" "foo" "bar")) (list (obj a t b "foo") '("bar")))
 (test iso (parseopt '("-ab" "foo")) (list (obj a t b "foo") nil))
+(test iso (tostring:parseopt '("--bbbb")) "\
+parseopt.t: option requires an argument '--bbbb'
+Try `parseopt.t--help' for more information.
+")
 (test iso (tostring:parseopt '("-ba" "foo")) "\
-Usage: parseopt.t [OPTION]...
-
-  -a, --aaaa            aaaaaa
-  -b FILE, --bbbb=FILE  bbbbbb
-      --help            display this help and exit
-      --version         output version information and exit
+parseopt.t: option requires an argument -- 'b'
+Try `parseopt.t--help' for more information.
 ")
 (test iso (tostring:parseopt '("-ba=foo")) "\
-Usage: parseopt.t [OPTION]...
-
-  -a, --aaaa            aaaaaa
-  -b FILE, --bbbb=FILE  bbbbbb
-      --help            display this help and exit
-      --version         output version information and exit
+parseopt.t: option requires an argument -- 'b'
+Try `parseopt.t--help' for more information.
 ")
 (test iso (tostring:parseopt '("-ba")) "\
-Usage: parseopt.t [OPTION]...
-
-  -a, --aaaa            aaaaaa
-  -b FILE, --bbbb=FILE  bbbbbb
-      --help            display this help and exit
-      --version         output version information and exit
+parseopt.t: option requires an argument -- 'b'
+Try `parseopt.t--help' for more information.
 ")
 
 ; ------------------------------------------------------------------------------
@@ -151,8 +158,12 @@ Can't coerce \"foo\" int
   (b "b|bbbb=s:FILE" nil "bbbbbb")
   (args (foo)))
 
-
 (test iso (tostring:parseopt nil) "\
+parseopt.t: missing operand
+Try `parseopt.t--help' for more information.
+")
+
+(test iso (tostring:parseopt '("--help")) "\
 Usage: parseopt.t [OPTION]... FOO
 
   -a, --aaaa            aaaaaa
@@ -169,6 +180,14 @@ Usage: parseopt.t [OPTION]... FOO
   (b "b|bbbb=s:FILE" nil "bbbbbb")
   (args (foo bar)))
 (test iso (tostring:parseopt nil) "\
+parseopt.t: missing operand
+Try `parseopt.t--help' for more information.
+")
+(test iso (tostring:parseopt '("foo")) "\
+parseopt.t: missing operand
+Try `parseopt.t--help' for more information.
+")
+(test iso (tostring:parseopt '("--help")) "\
 Usage: parseopt.t [OPTION]... FOO BAR
 
   -a, --aaaa            aaaaaa
@@ -177,12 +196,8 @@ Usage: parseopt.t [OPTION]... FOO BAR
       --version         output version information and exit
 ")
 (test iso (tostring:parseopt '("foo")) "\
-Usage: parseopt.t [OPTION]... FOO BAR
-
-  -a, --aaaa            aaaaaa
-  -b FILE, --bbbb=FILE  bbbbbb
-      --help            display this help and exit
-      --version         output version information and exit
+parseopt.t: missing operand
+Try `parseopt.t--help' for more information.
 ")
 (test iso (parseopt '("foo" "bar")) (list (table) '("foo" "bar")))
 
@@ -193,7 +208,7 @@ Usage: parseopt.t [OPTION]... FOO BAR
   (b "b|bbbb=s:FILE" nil "bbbbbb")
   (args (foo bar . baz)))
 
-(test iso (tostring:parseopt nil) "\
+(test iso (tostring:parseopt '("--help")) "\
 Usage: parseopt.t [OPTION]... FOO BAR [BAZ]...
 
   -a, --aaaa            aaaaaa
@@ -202,12 +217,8 @@ Usage: parseopt.t [OPTION]... FOO BAR [BAZ]...
       --version         output version information and exit
 ")
 (test iso (tostring:parseopt '("foo")) "\
-Usage: parseopt.t [OPTION]... FOO BAR [BAZ]...
-
-  -a, --aaaa            aaaaaa
-  -b FILE, --bbbb=FILE  bbbbbb
-      --help            display this help and exit
-      --version         output version information and exit
+parseopt.t: missing operand
+Try `parseopt.t--help' for more information.
 ")
 (test iso (parseopt '("foo" "bar")) (list (table) '("foo" "bar")))
 (test iso (parseopt '("foo" "bar" "baz")) (list (table) '("foo" "bar" "baz")))
@@ -221,11 +232,15 @@ Usage: parseopt.t [OPTION]... FOO BAR [BAZ]...
 (test iso (parseopt nil) (list (table) nil))
 (test iso (parseopt '("foo")) (list (table) '("foo")))
 (parseopt '("-a"))
-(test iso (tostring:parseopt '("-a")) "\
+(test iso (tostring:parseopt '("--help")) "\
 Usage: parseopt.t [OPTION]... [FOO]...
 
       --help            display this help and exit
       --version         output version information and exit
+")
+(test iso (tostring:parseopt '("-a")) "\
+parseopt.t: invalid option -- 'a'
+Try `parseopt.t--help' for more information.
 ")
 
 ; ------------------------------------------------------------------------------
@@ -233,7 +248,7 @@ Usage: parseopt.t [OPTION]... [FOO]...
 (defopts
   (a "a|aaaa=s" nil))
 
-(test iso (tostring:parseopt '("-a")) "\
+(test iso (tostring:parseopt '("--help")) "\
 Usage: parseopt.t [OPTION]...
 
   -a VALUE, --aaaa=VALUE
@@ -241,18 +256,28 @@ Usage: parseopt.t [OPTION]...
       --version         output version information and exit
 ")
 
+(test iso (tostring:parseopt '("-a")) "\
+parseopt.t: option requires an argument -- 'a'
+Try `parseopt.t--help' for more information.
+")
+
 ; ------------------------------------------------------------------------------
 
 (defopts
   (a "a|aaaa=s:LONG-VALUE" nil "foobarbaz"))
 
-(test iso (tostring:parseopt '("-a")) "\
+(test iso (tostring:parseopt '("--help")) "\
 Usage: parseopt.t [OPTION]...
 
   -a LONG-VALUE, --aaaa=LONG-VALUE
                         foobarbaz
       --help            display this help and exit
       --version         output version information and exit
+")
+
+(test iso (tostring:parseopt '("-a")) "\
+parseopt.t: option requires an argument -- 'a'
+Try `parseopt.t--help' for more information.
 ")
 
 ; ------------------------------------------------------------------------------

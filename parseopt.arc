@@ -37,6 +37,29 @@
     )
   (quit 1))
 
+(def invalid-opt-err (x)
+  (w/stdout (stderr)
+    (if (len> x 1)
+        (prn prog_ ": unrecognized option '--" x "'")
+        (prn prog_ ": invalid option -- '" x "'"))
+    (prn "Try `" prog_ "--help' for more information."))
+  (quit 4))
+
+(def require-arg-err (x)
+  (w/stdout (stderr)
+    (pr prog_ ": option requires an argument ")
+    (if (len> x 1)
+        (prn "'--" x "'")
+        (prn "-- '" x "'"))
+    (prn "Try `" prog_ "--help' for more information."))
+  (quit 2))
+
+(def missing-operand-err ()
+  (w/stdout (stderr)
+    (prn prog_ ": missing operand")
+    (prn "Try `" prog_ "--help' for more information."))
+  (quit 1))
+
 (def parseopt-err (opt msg (o code 1))
   (w/stdout (stderr)
     (prn prog_ ": " opt ": invalid argument")
@@ -88,7 +111,7 @@
                        (let val (if it!value
                                     (aif (and (is index lasti) (or v (pop args)))
                                          it
-                                         (pr-usage))
+                                         (require-arg-err k))
                                     t)
                          (= (opts it!name)
                             (on-err [parseopt-err k details._ 2]
@@ -96,9 +119,9 @@
                                       (case it!value
                                         "i" (int val)
                                             val)))))
-                       (pr-usage))))))
+                       (invalid-opt-err k))))))
         (if (len< oargs (lenargs args_))
-            (pr-usage)
+            (missing-operand-err)
             (list opts rev.oargs)))))
 
   (mac defopts args
