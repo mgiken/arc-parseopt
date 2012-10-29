@@ -13,7 +13,7 @@ Usage: parseopt.t [OPTION]...
 ")
 (test iso (tostring:parseopt '("-a")) "\
 parseopt.t: invalid option -- 'a'
-Try `parseopt.t--help' for more information.
+Try `parseopt.t --help' for more information.
 ")
 
 
@@ -37,7 +37,7 @@ Usage: parseopt.t [OPTION]...
 ")
 (test iso (tostring:parseopt '("--aaaa")) "\
 parseopt.t: unrecognized option '--aaaa'
-Try `parseopt.t--help' for more information.
+Try `parseopt.t --help' for more information.
 ")
 (test iso (tostring:parseopt '("--version")) "parseopt.t version 0.0.1\n")
 (= version* "1.0.0")
@@ -61,7 +61,7 @@ Usage: parseopt.t [OPTION]...
 ")
 (test iso (tostring:parseopt '("-a")) "\
 parseopt.t: invalid option -- 'a'
-Try `parseopt.t--help' for more information.
+Try `parseopt.t --help' for more information.
 ")
 
 ; ------------------------------------------------------------------------------
@@ -84,7 +84,7 @@ Usage: parseopt.t [OPTION]...
 ")
 (test iso (tostring:parseopt '("-b")) "\
 parseopt.t: invalid option -- 'b'
-Try `parseopt.t--help' for more information.
+Try `parseopt.t --help' for more information.
 ")
 
 ; ------------------------------------------------------------------------------
@@ -105,7 +105,7 @@ Usage: parseopt.t [OPTION]...
 
 (test iso (tostring:parseopt '("-b")) "\
 parseopt.t: option requires an argument -- 'b'
-Try `parseopt.t--help' for more information.
+Try `parseopt.t --help' for more information.
 ")
 (test iso (parseopt '("-a" "-b" "foo")) (list (obj a t b "foo") nil))
 (test iso (parseopt '("-a" "-b=foo")) (list (obj a t b "foo") nil))
@@ -115,19 +115,19 @@ Try `parseopt.t--help' for more information.
 (test iso (parseopt '("-ab" "foo")) (list (obj a t b "foo") nil))
 (test iso (tostring:parseopt '("--bbbb")) "\
 parseopt.t: option requires an argument '--bbbb'
-Try `parseopt.t--help' for more information.
+Try `parseopt.t --help' for more information.
 ")
 (test iso (tostring:parseopt '("-ba" "foo")) "\
 parseopt.t: option requires an argument -- 'b'
-Try `parseopt.t--help' for more information.
+Try `parseopt.t --help' for more information.
 ")
 (test iso (tostring:parseopt '("-ba=foo")) "\
 parseopt.t: option requires an argument -- 'b'
-Try `parseopt.t--help' for more information.
+Try `parseopt.t --help' for more information.
 ")
 (test iso (tostring:parseopt '("-ba")) "\
 parseopt.t: option requires an argument -- 'b'
-Try `parseopt.t--help' for more information.
+Try `parseopt.t --help' for more information.
 ")
 
 ; ------------------------------------------------------------------------------
@@ -160,7 +160,7 @@ Can't coerce \"foo\" int
 
 (test iso (tostring:parseopt nil) "\
 parseopt.t: missing operand
-Try `parseopt.t--help' for more information.
+Try `parseopt.t --help' for more information.
 ")
 
 (test iso (tostring:parseopt '("--help")) "\
@@ -181,11 +181,11 @@ Usage: parseopt.t [OPTION]... FOO
   (args (foo bar)))
 (test iso (tostring:parseopt nil) "\
 parseopt.t: missing operand
-Try `parseopt.t--help' for more information.
+Try `parseopt.t --help' for more information.
 ")
 (test iso (tostring:parseopt '("foo")) "\
 parseopt.t: missing operand
-Try `parseopt.t--help' for more information.
+Try `parseopt.t --help' for more information.
 ")
 (test iso (tostring:parseopt '("--help")) "\
 Usage: parseopt.t [OPTION]... FOO BAR
@@ -197,7 +197,7 @@ Usage: parseopt.t [OPTION]... FOO BAR
 ")
 (test iso (tostring:parseopt '("foo")) "\
 parseopt.t: missing operand
-Try `parseopt.t--help' for more information.
+Try `parseopt.t --help' for more information.
 ")
 (test iso (parseopt '("foo" "bar")) (list (table) '("foo" "bar")))
 
@@ -218,7 +218,7 @@ Usage: parseopt.t [OPTION]... FOO BAR [BAZ]...
 ")
 (test iso (tostring:parseopt '("foo")) "\
 parseopt.t: missing operand
-Try `parseopt.t--help' for more information.
+Try `parseopt.t --help' for more information.
 ")
 (test iso (parseopt '("foo" "bar")) (list (table) '("foo" "bar")))
 (test iso (parseopt '("foo" "bar" "baz")) (list (table) '("foo" "bar" "baz")))
@@ -240,7 +240,7 @@ Usage: parseopt.t [OPTION]... [FOO]...
 ")
 (test iso (tostring:parseopt '("-a")) "\
 parseopt.t: invalid option -- 'a'
-Try `parseopt.t--help' for more information.
+Try `parseopt.t --help' for more information.
 ")
 
 ; ------------------------------------------------------------------------------
@@ -258,7 +258,7 @@ Usage: parseopt.t [OPTION]...
 
 (test iso (tostring:parseopt '("-a")) "\
 parseopt.t: option requires an argument -- 'a'
-Try `parseopt.t--help' for more information.
+Try `parseopt.t --help' for more information.
 ")
 
 ; ------------------------------------------------------------------------------
@@ -277,7 +277,7 @@ Usage: parseopt.t [OPTION]...
 
 (test iso (tostring:parseopt '("-a")) "\
 parseopt.t: option requires an argument -- 'a'
-Try `parseopt.t--help' for more information.
+Try `parseopt.t --help' for more information.
 ")
 
 ; ------------------------------------------------------------------------------
