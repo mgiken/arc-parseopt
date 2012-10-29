@@ -1,5 +1,7 @@
 (require "re.arc")
 
+(= version* "0.0.1")
+
 (with (prog_  (re-replace ".*/" args*.0 "")
        spec_  (table)
        opts_  (table)
@@ -7,29 +9,32 @@
        args_  nil
        help_  nil)
 
-(def usage ()
+(def pr-version ()
   (w/stdout (stderr)
-    (pr "Usage: " prog_ (case count_
-                          0 ""
-                          1 " [OPTION]"
-                            " [OPTIONS]..."))
+    (prn prog_ " version " version*))
+  (quit 1))
+
+(def pr-usage ()
+  (w/stdout (stderr)
+    (pr "Usage: " prog_ " [OPTION]...")
     ((afn (x)
       (awhen (and (acons x) (car x))
         (pr " " upcase.it))
       (if (no x)     nil
           (~acons x) (pr " [" upcase.x "]...")
                      (self cdr.x))) args_)
-    (prn)
-    (when (> count_ 0)
-      (prn #\newline "Options:")
-      (map (fn ((x y))
-             (pr "  " x)
-             (if blank.y
-                 (prn)
-                 (if (len> x 21)
-                     (prn #\newline (newstring 24 #\space) y)
-                     (prn (newstring (- 22 len.x) #\space) y))))
-             rev.help_)))
+    (prn #\newline)
+    (map (fn ((x y))
+           (pr "  " x)
+           (if blank.y
+               (prn)
+               (if (len> x 21)
+                   (prn #\newline (newstring 24 #\space) y)
+                   (prn (newstring (- 22 len.x) #\space) y))))
+           rev.help_)
+      (prn "      --help            display this help and exit")
+      (prn "      --version         output version information and exit")
+    )
   (quit 1))
 
 (def parseopt-err (opt msg (o code 1))
@@ -64,35 +69,37 @@
                     acc))
 
 (def parseopt ((o args (cdr:copy args*)))
-  (with (oargs nil opts (copy opts_))
-    (whilet x (pop args)
-      (if (is x "--")
-          (do (= oargs (join rev.args oargs))
-              (wipe args))
-          (~litmatch "-" x)
-          (push x oargs)
-          (withs ((k v) (tokens x #\=)
-                  x     (if (litmatch "--" k)
-                            (list:trim k 'front #\-)
-                            (map [string _] (cdr:coerce k 'cons)))
-                  lasti (- len.x 1))
-            (on k x
-              (aif (spec_ string.k)
-                   (let val (if it!value
-                                (aif (and (is index lasti) (or v (pop args)))
-                                     it
-                                     (usage))
-                                t)
-                     (= (opts it!name)
-                        (on-err [parseopt-err k details._ 2]
-                                (fn ()
-                                  (case it!value
-                                    "i" (int val)
-                                        val)))))
-                   (usage))))))
-    (if (len< oargs (lenargs args_))
-        (usage)
-        (list opts rev.oargs))))
+  (if (find "--help"    args) (pr-usage)
+      (find "--version" args) (pr-version)
+      (with (oargs nil opts (copy opts_))
+        (whilet x (pop args)
+          (if (is x "--")
+              (do (= oargs (join rev.args oargs))
+                  (wipe args))
+              (~litmatch "-" x)
+              (push x oargs)
+              (withs ((k v) (tokens x #\=)
+                      x     (if (litmatch "--" k)
+                                (list:trim k 'front #\-)
+                                (map [string _] (cdr:coerce k 'cons)))
+                      lasti (- len.x 1))
+                (on k x
+                  (aif (spec_ string.k)
+                       (let val (if it!value
+                                    (aif (and (is index lasti) (or v (pop args)))
+                                         it
+                                         (pr-usage))
+                                    t)
+                         (= (opts it!name)
+                            (on-err [parseopt-err k details._ 2]
+                                    (fn ()
+                                      (case it!value
+                                        "i" (int val)
+                                            val)))))
+                       (pr-usage))))))
+        (if (len< oargs (lenargs args_))
+            (pr-usage)
+            (list opts rev.oargs)))))
 
   (mac defopts args
     (= spec_ (table) opts_ (table) count_ 0 args_ nil help_ nil)
