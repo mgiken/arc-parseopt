@@ -38,6 +38,8 @@ Usage: parseopt.t [OPTION]...
       --version         output version information and exit
 ")
 (test iso (tostring:parseopt '("--version")) "parseopt.t version 0.0.1\n")
+(= version* "1.0.0")
+(test iso (tostring:parseopt '("--version")) "parseopt.t version 1.0.0\n")
 
 ; ------------------------------------------------------------------------------
 
