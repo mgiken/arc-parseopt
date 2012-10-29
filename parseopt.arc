@@ -42,7 +42,7 @@
     (if (len> x 1)
         (prn prog_ ": unrecognized option '--" x "'")
         (prn prog_ ": invalid option -- '" x "'"))
-    (prn "Try `" prog_ "--help' for more information."))
+    (prn "Try `" prog_ " --help' for more information."))
   (quit 4))
 
 (def require-arg-err (x)
@@ -51,13 +51,13 @@
     (if (len> x 1)
         (prn "'--" x "'")
         (prn "-- '" x "'"))
-    (prn "Try `" prog_ "--help' for more information."))
+    (prn "Try `" prog_ " --help' for more information."))
   (quit 2))
 
 (def missing-operand-err ()
   (w/stdout (stderr)
     (prn prog_ ": missing operand")
-    (prn "Try `" prog_ "--help' for more information."))
+    (prn "Try `" prog_ " --help' for more information."))
   (quit 1))
 
 (def parseopt-err (opt msg (o code 1))
